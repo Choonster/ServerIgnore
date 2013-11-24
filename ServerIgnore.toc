@@ -1,6 +1,6 @@
 ﻿## Interface: 50400
 ## Title: ServerIgnore
-## Version: 1.01
+## Version: @project-version@
 ## Author: Choonster
 ## Notes: Allows you to ignore all chat messages from certain servers.
 ## SavedVariables: SERVERIGNORE_DB, SERVERIGNORE_ENABLED

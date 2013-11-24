@@ -1,5 +1,10 @@
 ﻿local addon, ns = ...
 
+-- List globals here for Mikk's FindGlobals script
+-- GLOBALS: SLASH_SERVERIGNORE1, SLASH_SERVERIGNORE2, SERVERIGNORE_ENABLED, SERVERIGNORE_DB, ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilter, UnitName
+
+local print, wipe, pairs, tconcat = print, wipe, pairs, table.concat
+
 -- Chat events (without the CHAT_MSG_ prefix) to filter
 local Events = {
 	"ACHIEVEMENT",
@@ -131,7 +136,7 @@ do
 			if count == 0 then
 				printf("You have not ignored any servers yet.")
 			else
-				printf("Ignored Servers: %s", table.concat(serverListTemp, ", ", 1, count))
+				printf("Ignored Servers: %s", tconcat(serverListTemp, ", ", 1, count))
 			end
 		else
 			printf("Slash Command Usage")
