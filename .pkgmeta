@@ -1,3 +1,4 @@
 ﻿package-as: ServerIgnore
 
-tools-used: findglobals
+tools-used:
+ - findglobals
