@@ -1,8 +1,8 @@
-﻿## Interface: 50001
+﻿## Interface: 50400
 ## Title: ServerIgnore
-## Version: 1.0
+## Version: 1.01
 ## Author: Choonster
 ## Notes: Allows you to ignore all chat messages from certain servers.
-## SavedVariables: SERVERIGNORE_DB
+## SavedVariables: SERVERIGNORE_DB, SERVERIGNORE_ENABLED
 
 core.lua
