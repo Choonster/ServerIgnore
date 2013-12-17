@@ -77,6 +77,15 @@ do
 	local serverListTemp = {}
 
 	local playerServer = GetRealmName():lower()
+	
+	local function ResolveServerName(name)
+		if Units[name] then
+			local _, serverName = UnitName(name)
+			return serverName and serverName:lower() -- UnitName returns the server name in proper case, we want lowercase for the DB keys
+		else
+			return name
+		end
+	end
 
 	SlashCmdList.SERVERIGNORE = function(input)
 		local cmd, name = input:lower():trim():match("^(%S+)%s*(.*)$")
@@ -95,12 +104,7 @@ do
 			wipe(DB)
 			printf("Ignore list reset.")
 		elseif cmd == "add" and name and name ~= "" then
-			local serverName, _;
-			if Units[name] then
-				_, serverName = UnitName(name)
-			else
-				serverName = name
-			end
+			local serverName = ResolveServerName(name)			
 
 			if not serverName or serverName == playerServer then
 				printf("You cannot ignore your own server.")
@@ -111,13 +115,8 @@ do
 				printf("Server %s added to your ignore list.", serverName)
 			end
 		elseif cmd == "remove" and name and name ~= "" then
-			local serverName, _;
-			if Units[name] then
-				_, serverName = UnitName(name)
-			else
-				serverName = name
-			end
-
+			local serverName = ResolveServerName(name)
+			
 			if not serverName or serverName == playerServer then
 				printf("You cannot ignore your own server.")
 			elseif DB[serverName] then
