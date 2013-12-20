@@ -14,6 +14,8 @@ local Events = {
 	"CHANNEL",
 	"DND",
 	"EMOTE",
+	"INSTANCE_CHAT",
+	"INSTANCE_CHAT_LEADER"
 	"PARTY",
 	"PARTY_LEADER",
 	"RAID",
@@ -77,7 +79,7 @@ do
 	local serverListTemp = {}
 
 	local playerServer = GetRealmName():lower()
-	
+
 	local function ResolveServerName(name)
 		if Units[name] then
 			local _, serverName = UnitName(name)
@@ -104,7 +106,7 @@ do
 			wipe(DB)
 			printf("Ignore list reset.")
 		elseif cmd == "add" and name and name ~= "" then
-			local serverName = ResolveServerName(name)			
+			local serverName = ResolveServerName(name)
 
 			if not serverName or serverName == playerServer then
 				printf("You cannot ignore your own server.")
@@ -116,7 +118,7 @@ do
 			end
 		elseif cmd == "remove" and name and name ~= "" then
 			local serverName = ResolveServerName(name)
-			
+
 			if not serverName or serverName == playerServer then
 				printf("You cannot ignore your own server.")
 			elseif DB[serverName] then
