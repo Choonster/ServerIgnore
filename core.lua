@@ -169,3 +169,4 @@ f:SetScript("OnEvent", function(self, event, name)
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end)
+
