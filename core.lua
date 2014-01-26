@@ -3,7 +3,7 @@
 -- List globals here for Mikk's FindGlobals script
 -- GLOBALS: SLASH_SERVERIGNORE1, SLASH_SERVERIGNORE2, SERVERIGNORE_ENABLED, SERVERIGNORE_DB, ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilter, UnitName
 
-local print, wipe, pairs, tconcat = print, wipe, pairs, table.concat
+local print, wipe, ipairs, pairs, tconcat = print, wipe, ipairs, pairs, table.concat
 
 -- Chat events (without the CHAT_MSG_ prefix) to filter
 local Events = {
@@ -49,11 +49,32 @@ end
 
 local DB;
 
-local function FilterFunc(chatFrame, event, msg, author, ...)
-	local name, realm = author:lower():match("([^-]+)[-]?([^-]*)")
+local IgnoredRealmPatterns = {}
 
-	if DB[realm] then
-		return true
+local function FilterFunc(chatFrame, event, msg, author, ...)
+	if event == "CHAT_MSG_TEXT_EMOTE" then -- This event doesn't include the realm name in the author argument, so we need to treat it differently
+		msg = msg:lower()
+		for _, realmPattern in ipairs(IgnoredRealmPatterns) do
+			if msg:match(realmPattern) then
+				return true
+			end
+		end
+	else
+		author = author:lower()
+		local name = author:match("^[^-]+")
+		local realm = author:sub(#name + 2) -- Skip the dash after the player name
+
+		if DB[realm] then
+			return true
+		end
+	end
+end
+
+local function UpdateIgnoredRealmPatterns()
+	wipe(IgnoredRealmPatterns)
+
+	for realm, _ in pairs(DB) do
+		IgnoredRealmPatterns[#IgnoredRealmPatterns + 1] = "[^-]+%-" .. realm:gsub("%-", "%%-") -- Escape dashes in the realm name
 	end
 end
 
@@ -114,6 +135,7 @@ do
 				printf("Server %s is already on your ignore list.", serverName)
 			else
 				DB[serverName] = true
+				UpdateIgnoredRealmPatterns()
 				printf("Server %s added to your ignore list.", serverName)
 			end
 		elseif cmd == "remove" and name and name ~= "" then
@@ -123,6 +145,7 @@ do
 				printf("You cannot ignore your own server.")
 			elseif DB[serverName] then
 				DB[serverName] = nil
+				UpdateIgnoredRealmPatterns()
 				printf("Server %s removed from your ignore list.", serverName)
 			else
 				printf("Server %s is not on your ignore list.", serverName)
@@ -165,6 +188,8 @@ f:SetScript("OnEvent", function(self, event, name)
 
 		SERVERIGNORE_DB = SERVERIGNORE_DB or {}
 		DB = SERVERIGNORE_DB
+
+		UpdateIgnoredRealmPatterns()
 
 		self:UnregisterEvent("ADDON_LOADED")
 	end
