@@ -50,6 +50,13 @@ end
 local DB
 
 local function FilterFunc(chatFrame, event, msg, author, _, _, _, _, _, _, _, _, _, authorGUID)
+	-- TradeForwarder manually calls the filter functions for CHAT_MSG_CHANNEL with an empty string for the authorGUID argument
+	-- If we don't get a valid GUID, just let the message through
+	if not authorGUID or #authorGUID < 18 then
+		-- print(("ServerIgnore ERROR: Invalid GUID. event: %s, msg: %s, author: %s, authorGUID: %s"):format(event, msg, author, authorGUID))
+		return false
+	end
+	
 	local _, _, _, _, _, _, realm = GetPlayerInfoByGUID(authorGUID)
 
 	if DB[realm and realm:lower()] then
